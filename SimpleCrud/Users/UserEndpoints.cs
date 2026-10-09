@@ -2,7 +2,7 @@ namespace SimpleCrud.Users;
 
 public static class UserEndPoints
 {
-    public static void MapUserEndPoints(this IEndpointRouteBuilder app)
+    public static void MapUserEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/users"); 
 
@@ -18,6 +18,18 @@ public static class UserEndPoints
 
     private static IResult CreateUser(CreateUserRequest req, UserService service)
     {
-        return Results.Ok();
+        try
+        {
+            service.CreateUser(req);
+            return Results.Ok();
+        }
+        catch (ArgumentException ae)
+        {
+            return Results.BadRequest(new {message = ae.Message});
+        }
+        catch (InvalidOperationException ioe)
+        {
+            return Results.Conflict(new {message = ioe.Message});
+        }
     }
 }

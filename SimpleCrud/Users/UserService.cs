@@ -21,4 +21,21 @@ public class UserService
     {
         return _db.Select(u => new UserResponse(u.UserId, u.UserName)).ToList();
     }
+
+    public void CreateUser(CreateUserRequest u)
+    {
+        if (string.IsNullOrWhiteSpace(u.UserId) ||
+            string.IsNullOrWhiteSpace(u.UserName) ||
+            string.IsNullOrWhiteSpace(u.Password))
+        {
+            throw new ArgumentException("Some required fields are missing.");
+        }
+
+        if (_db.Any(x => x.UserId == u.UserId))
+        {
+            throw new InvalidOperationException("This Id already exists.");
+        }
+
+        _db.Add(u);
+    }
 }
